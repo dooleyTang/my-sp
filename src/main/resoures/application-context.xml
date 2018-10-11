@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+  
+    <!-- 读取log4j的配置文件 -->
+    <context:property-placeholder location="classpath:log4j.properties"/>    
+        
+    <!-- 启用注解方式 -->    
+    <context:annotation-config />
+     
+     <!-- 指定要扫描的包 和 子包 -->
+    <context:component-scan base-package="com.bwf" />
+    
+    <!-- 开启自动代理 -->
+    <aop:aspectj-autoproxy />
+   
+    <!-- mybatis配置 -->
+    <!-- 数据源 配置-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+		<property name="url" value="jdbc:mysql://127.0.0.1:3306/user?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=PRC&amp;useSSL=true"/>
+		<property name="username" value="root"/>
+		<property name="password" value="123456"/>
+	</bean>
+    <!-- sqlSession工厂  使用spring来创建sqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	  <property name="dataSource" ref="dataSource" />
+	  <!-- 映射文件 -->
+	  <property name="mapperLocations" value="classpath:com/bwf/mapper/*.xml" />
+	</bean> 
+ 
+ 
+	<!-- 自动扫描com/bwf/dao下的所有dao接口，并实现这些接口，
+	可直接在程序中使用dao接口，不用再获取sqlsession对象 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+       <property name="basePackage" value="com/bwf/dao"/>
+       <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+	
+</beans>
